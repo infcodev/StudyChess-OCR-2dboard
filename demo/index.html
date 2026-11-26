@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demo de OCR 2D · StudyChess</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>StudyChess OCR 2D</h1>
+        <p>Lee una captura de un solo tablero. La imagen y el modelo se procesan en este navegador.</p>
+      </header>
+
+      <form id="ocr-form" class="inputs">
+        <div class="file-field">
+          <label for="model">Modelo ONNX</label>
+          <input id="model" type="file" accept=".onnx" aria-describedby="model-help" required>
+          <small id="model-help">Clasificador ONNX compatible · hasta 25 MB</small>
+        </div>
+        <div class="file-field">
+          <label for="capture">Captura de ajedrez</label>
+          <input id="capture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="file-help" required>
+          <small id="file-help">PNG, JPG o WebP · hasta 25 MB y 16 megapíxeles</small>
+        </div>
+        <button id="run" type="submit" disabled>Leer tablero</button>
+      </form>
+      <noscript><p>Activa JavaScript para leer el tablero en el navegador.</p></noscript>
+      <p id="status" role="status" aria-atomic="true"></p>
+
+      <div class="comparison" id="comparison" hidden>
+        <section aria-labelledby="source-title">
+          <h2 id="source-title">Captura</h2>
+          <div class="preview">
+            <canvas id="preview" role="img" aria-label="Captura seleccionada"></canvas>
+            <div class="crop" id="crop" aria-hidden="true" hidden></div>
+          </div>
+          <p id="crop-note" class="crop-note" hidden>El contorno indica el recorte utilizado.</p>
+        </section>
+        <section id="result" aria-labelledby="result-title" hidden>
+          <h2 id="result-title">Tablero leído</h2>
+          <div id="board" class="board" aria-hidden="true"></div>
+          <p id="review" hidden></p>
+          <div class="placement">
+            <label for="placement">Colocación en el orden visual de la captura</label>
+            <textarea id="placement" rows="2" readonly spellcheck="false"></textarea>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
