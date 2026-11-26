@@ -5,6 +5,7 @@ const captureInput = byId("capture");
 const run = byId("run");
 const status = byId("status");
 const preview = byId("preview");
+const previewFrame = byId("preview-frame");
 const comparison = byId("comparison");
 const crop = byId("crop");
 const cropNote = byId("crop-note");
@@ -12,6 +13,8 @@ const resultPanel = byId("result");
 const board = byId("board");
 const review = byId("review");
 const placement = byId("placement");
+const copyButton = byId("copy-placement");
+const copyStatus = byId("copy-status");
 
 const pieces = { K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙", k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
 const imageTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
@@ -32,6 +35,9 @@ let worker;
 let timer;
 let modelVersion = 0;
 let busy = false;
+let copyRequest = 0;
+let copyFeedbackTimer;
+let lastCopyMessage = "";
 
 function announce(state, message) {
   status.dataset.state = state;
@@ -43,6 +49,35 @@ function markField(input, helpId, invalid) {
   input.setAttribute("aria-describedby", invalid ? `${helpId} status` : helpId);
 }
 
+function clearCopyFeedback() {
+  clearTimeout(copyFeedbackTimer);
+  copyStatus.textContent = "";
+  delete copyStatus.dataset.state;
+}
+
+async function copyPlacement() {
+  const text = placement.value;
+  if (!text) return;
+  const request = ++copyRequest;
+  let state;
+  let message;
+  try {
+    await navigator.clipboard.writeText(text);
+    state = "ok";
+    message = "Colocación copiada.";
+  } catch {
+    state = "error";
+    message = "No se pudo copiar. Selecciona el texto para copiarlo manualmente.";
+  }
+  if (request !== copyRequest) return;
+  clearCopyFeedback();
+  // Distinguish repeated messages so assistive technology announces them again.
+  lastCopyMessage = message === lastCopyMessage ? `${message}\u00a0` : message;
+  copyStatus.dataset.state = state;
+  copyStatus.textContent = lastCopyMessage;
+  copyFeedbackTimer = setTimeout(clearCopyFeedback, 5_000);
+}
+
 function clearOutput() {
   comparison.hidden = true;
   crop.hidden = true;
@@ -51,6 +86,8 @@ function clearOutput() {
   review.hidden = true;
   board.replaceChildren();
   placement.value = "";
+  copyRequest += 1;
+  clearCopyFeedback();
   preview.width = 1;
   preview.height = 1;
 }
@@ -103,6 +140,7 @@ function drawPreview(bitmap) {
   try {
     preview.width = bitmap.width;
     preview.height = bitmap.height;
+    previewFrame.style.setProperty("--source-ratio", String(bitmap.width / bitmap.height));
     preview.getContext("2d").drawImage(bitmap, 0, 0);
     comparison.hidden = false;
   } finally {
@@ -189,6 +227,14 @@ function selectionChanged() {
   if (busy) stopWorker();
   clearOutput();
   syncInputs();
+}
+
+if ("commandForElement" in copyButton) {
+  placement.addEventListener("command", (event) => {
+    if (event.command === "--copy-placement" && event.source === copyButton) void copyPlacement();
+  });
+} else {
+  copyButton.addEventListener("click", copyPlacement);
 }
 
 modelInput.addEventListener("change", () => {

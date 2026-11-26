@@ -11,19 +11,19 @@
     <main>
       <header>
         <h1>StudyChess OCR 2D</h1>
-        <p>Lee una captura de un solo tablero. La imagen y el modelo se procesan en este navegador.</p>
+        <p>Lee un tablero desde una captura. La imagen y el modelo se procesan en tu navegador.</p>
       </header>
 
       <form id="ocr-form" class="inputs">
         <div class="file-field">
           <label for="model">Modelo ONNX</label>
-          <input id="model" type="file" accept=".onnx" aria-describedby="model-help" required>
           <small id="model-help">Clasificador ONNX compatible · hasta 25 MB</small>
+          <input id="model" type="file" accept=".onnx" aria-describedby="model-help" required>
         </div>
         <div class="file-field">
           <label for="capture">Captura de ajedrez</label>
-          <input id="capture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="file-help" required>
           <small id="file-help">PNG, JPG o WebP · hasta 25 MB y 16 megapíxeles</small>
+          <input id="capture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="file-help" required>
         </div>
         <button id="run" type="submit" disabled>Leer tablero</button>
       </form>
@@ -33,9 +33,11 @@
       <div class="comparison" id="comparison" hidden>
         <section aria-labelledby="source-title">
           <h2 id="source-title">Captura</h2>
-          <div class="preview">
-            <canvas id="preview" role="img" aria-label="Captura seleccionada"></canvas>
-            <div class="crop" id="crop" aria-hidden="true" hidden></div>
+          <div class="preview-stage">
+            <div class="preview" id="preview-frame">
+              <canvas id="preview" role="img" aria-label="Captura seleccionada"></canvas>
+              <div class="crop" id="crop" aria-hidden="true" hidden></div>
+            </div>
           </div>
           <p id="crop-note" class="crop-note" hidden>El contorno indica el recorte utilizado.</p>
         </section>
@@ -44,8 +46,13 @@
           <div id="board" class="board" aria-hidden="true"></div>
           <p id="review" hidden></p>
           <div class="placement">
-            <label for="placement">Colocación en el orden visual de la captura</label>
-            <textarea id="placement" rows="2" readonly spellcheck="false"></textarea>
+            <div class="placement-heading">
+              <label for="placement">Colocación FEN</label>
+              <button id="copy-placement" type="button" command="--copy-placement" commandfor="placement">Copiar colocación</button>
+            </div>
+            <textarea id="placement" rows="2" readonly spellcheck="false" aria-describedby="placement-help"></textarea>
+            <small id="placement-help">Solo las piezas, en el orden visual de la captura.</small>
+            <p id="copy-status" role="status" aria-atomic="true"></p>
           </div>
         </section>
       </div>

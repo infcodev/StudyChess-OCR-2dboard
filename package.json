@@ -1,24 +1,9 @@
 {
-  "name": "@infcodev/studychess-ocr-2dboard",
+  "name": "studychess-ocr-2dboard",
   "version": "0.1.0",
-  "description": "Browser-side OCR for a single 2D chessboard",
+  "private": true,
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./src/index.d.ts",
-      "default": "./src/index.js"
-    }
-  },
-  "types": "./src/index.d.ts",
-  "files": ["src/", "MODEL.md"],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/infcodev/StudyChess-OCR-2dboard.git"
-  },
-  "homepage": "https://github.com/infcodev/StudyChess-OCR-2dboard#readme",
-  "bugs": "https://github.com/infcodev/StudyChess-OCR-2dboard/issues",
-  "keywords": ["chess", "ocr", "fen", "onnx", "webassembly"],
   "packageManager": "pnpm@11.27.0",
   "engines": {
     "node": ">=22.15.0"
@@ -27,9 +12,6 @@
     "demo": "vite --config demo/vite.config.js",
     "demo:build": "vite build --config demo/vite.config.js",
     "demo:preview": "vite preview --config demo/vite.config.js"
-  },
-  "peerDependencies": {
-    "onnxruntime-web": "1.26.0"
   },
   "devDependencies": {
     "onnxruntime-web": "1.26.0",
